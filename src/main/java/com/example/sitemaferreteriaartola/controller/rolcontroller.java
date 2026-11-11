@@ -1,23 +1,27 @@
 package com.example.sitemaferreteriaartola.controller;
 
-import com.example.sitemaferreteriaartola.entity.rolentity;
-import com.example.sitemaferreteriaartola.service.rolservice;
+import com.example.sitemaferreteriaartola.repository.rolrepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/roles")
 public class rolcontroller {
 
     @Autowired
-    private rolservice rolService;
+    private rolrepository rolrepository;
 
-    @GetMapping
-    public String listarRoles(Model model) {
-        model.addAttribute("roles", rolService.listarRoles());
-        model.addAttribute("rol", new rolentity());
-        return "roles";
+    @GetMapping("")
+    @ResponseBody
+    public String listarRolesDebug() {
+        try {
+            long total = rolrepository.count();
+            return "¡Conexión y consulta exitosas! Total de registros en la tabla rol: " + total;
+        } catch (Exception e) {
+            return "ERROR DETALLADO DE SUPABASE: " + e.getMessage();
+        }
     }
 }

@@ -54,6 +54,13 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
+        <!-- Base de datos local H2 en memoria para asegurar estabilidad total -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- Driver oficial para PostgreSQL (Producción en Supabase y Render) -->
         <dependency>
             <groupId>org.postgresql</groupId>

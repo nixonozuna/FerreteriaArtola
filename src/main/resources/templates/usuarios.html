@@ -22,9 +22,12 @@
 <nav class="navbar navbar-dark navbar-custom px-4 py-3 shadow-sm">
     <div class="container-fluid">
         <span class="navbar-brand mb-0 h1 fw-bold">🛠️ Ferretería Artola - Panel de Control</span>
-        <button type="button" class="btn btn-outline-light btn-sm px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRoles">
-            📋 Ver Roles del Sistema
-        </button>
+        <div class="d-flex gap-2">
+            <a href="/roles" class="btn btn-outline-light btn-sm px-3 fw-semibold">📋 Ir a Roles</a>
+            <button type="button" class="btn btn-outline-light btn-sm px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRoles">
+                🛡️ Ver Roles (Modal)
+            </button>
+        </div>
     </div>
 </nav>
 
@@ -59,12 +62,6 @@
         <form th:action="@{/usuarios/guardar}" method="post" id="usuarioForm" class="row g-3">
 
             <input type="hidden" name="idusuario" id="idusuario">
-            <input type="hidden" id="siguientecodigoOculto" th:value="${siguientecodigo}">
-
-            <div class="col-md-3">
-                <label class="form-label">Código de Usuario</label>
-                <input type="text" id="codigousuario" name="codigousuario" th:value="${siguientecodigo}" class="form-control bg-light fw-bold text-primary" readonly>
-            </div>
 
             <div class="col-md-3">
                 <label class="form-label">Nombres del Usuario</label>
@@ -134,11 +131,6 @@
                 </select>
             </div>
 
-            <div class="col-md-3">
-                <label class="form-label">Fecha de Registro</label>
-                <input type="text" id="fecharegistro" class="form-control bg-light text-muted" readonly th:value="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}">
-            </div>
-
             <div class="col-12 mt-3">
                 <button type="submit" id="btnGuardar" class="btn btn-success px-4 fw-semibold shadow-sm" disabled>💾 Guardar en Base de Datos</button>
             </div>
@@ -147,13 +139,11 @@
 
     <div class="card card-modern p-4 bg-white">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
-            <div>
-                <h5 class="fw-bold text-dark m-0">Usuarios Registrados en el Sistema</h5>
-            </div>
+            <h5 class="fw-bold text-dark m-0">Usuarios Registrados en el Sistema</h5>
 
             <div class="input-group" style="max-width: 320px;">
                 <span class="input-group-text bg-light text-muted">🔍</span>
-                <input type="text" id="inputFiltroBusqueda" class="form-control" placeholder="Filtrar código, nombre, cédula..." oninput="FiltrarTablaUsuarios()">
+                <input type="text" id="inputFiltroBusqueda" class="form-control" placeholder="Filtrar nombre, cédula..." oninput="FiltrarTablaUsuarios()">
             </div>
         </div>
 
@@ -161,22 +151,20 @@
             <table class="table table-hover align-middle" id="tablaUsuarios">
                 <thead>
                 <tr>
-                    <th>Código Usuario</th>
+                    <th>ID</th>
                     <th>Nombres y Apellidos</th>
                     <th>Nombre Usuario</th>
                     <th>Rol</th>
                     <th>Cédula</th>
                     <th>Estado</th>
-                    <th>Fecha Registro</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:if="${#lists.isEmpty(usuarios)}">
-                    <td colspan="7" class="text-center py-4 text-muted">No hay usuarios registrados todavía.</td>
+                    <td colspan="6" class="text-center py-4 text-muted">No hay usuarios registrados todavía.</td>
                 </tr>
                 <tr th:each="u : ${usuarios}" class="fila-tabla"
                     th:data-id="${u.idusuario}"
-                    th:data-codigo="${u.codigousuario}"
                     th:data-nombres="${u.nombres}"
                     th:data-apellidos="${u.apellidos}"
                     th:data-sexo="${u.sexo}"
@@ -189,7 +177,7 @@
                     th:data-direccion="${u.direccion}"
                     th:data-estado="${u.estado}"
                     onclick="SeleccionarUsuarioDesdeTabla(this)">
-                    <td class="fw-semibold text-primary" th:text="${u.codigousuario}"></td>
+                    <td class="fw-semibold text-primary" th:text="${u.idusuario}"></td>
                     <td th:text="${u.nombres + ' ' + u.apellidos}"></td>
                     <td class="fw-bold text-dark" th:text="${u.nombreusuario}"></td>
                     <td><span class="badge bg-secondary" th:text="${u.orol != null ? u.orol.descripcion : 'Sin rol'}"></span></td>
@@ -197,7 +185,6 @@
                     <td>
                         <span class="badge" th:classappend="${u.estado} ? 'bg-success' : 'bg-danger'" th:text="${u.estado} ? 'Activo' : 'Inactivo'"></span>
                     </td>
-                    <td class="text-muted" th:text="${u.fecharegistro != null ? #temporals.format(u.fecharegistro, 'dd/MM/yyyy') : 'N/A'}"></td>
                 </tr>
                 </tbody>
             </table>
@@ -206,11 +193,12 @@
 
 </div>
 
-<div class="modal fade" id="modalRoles" tabindex="-1" aria-labelledby="modalRolesLabel" aria-hidden="true">
+<!-- Modal Roles -->
+<div class="modal fade" id="modalRoles" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content card-modern">
             <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold" id="modalRolesLabel">🛡️ Roles Registrados en el Sistema</h5>
+                <h5 class="modal-title fw-bold">🛡️ Roles Registrados en el Sistema</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-4">
@@ -218,7 +206,7 @@
                     <table class="table table-striped align-middle">
                         <thead class="table-dark">
                         <tr>
-                            <th>Código Rol</th>
+                            <th>ID Rol</th>
                             <th>Descripción Rol</th>
                         </tr>
                         </thead>
@@ -227,7 +215,7 @@
                             <td colspan="2" class="text-center text-muted py-3">No hay roles registrados.</td>
                         </tr>
                         <tr th:each="r : ${roles}">
-                            <td class="fw-bold text-primary" th:text="${r.codigorol}"></td>
+                            <td class="fw-bold text-primary" th:text="${r.idrol}"></td>
                             <td th:text="${r.descripcion}"></td>
                         </tr>
                         </tbody>
@@ -242,13 +230,9 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
     function HabilitarCampos() {
-        let campos = document.querySelectorAll('.campo-control');
-        campos.forEach(campo => {
-            campo.removeAttribute('disabled');
-        });
+        document.querySelectorAll('.campo-control').forEach(c => c.removeAttribute('disabled'));
         document.getElementById('btnGuardar').removeAttribute('disabled');
         document.getElementById('btnOjo').removeAttribute('disabled');
     }
@@ -256,8 +240,6 @@
     function BotonAgregar() {
         LimpiarFormulario();
         HabilitarCampos();
-        let codigosiguiente = document.getElementById('siguientecodigoOculto').value;
-        document.getElementById('codigousuario').value = codigosiguiente;
     }
 
     function LimpiarFormulario() {
@@ -267,17 +249,13 @@
 
     function BloquearFormulario() {
         LimpiarFormulario();
-        let campos = document.querySelectorAll('.campo-control');
-        campos.forEach(campo => {
-            campo.setAttribute('disabled', 'true');
-        });
+        document.querySelectorAll('.campo-control').forEach(c => c.setAttribute('disabled', 'true'));
         document.getElementById('btnGuardar').setAttribute('disabled', 'true');
         document.getElementById('btnOjo').setAttribute('disabled', 'true');
     }
 
     function SeleccionarUsuarioDesdeTabla(element) {
         document.getElementById('idusuario').value = element.getAttribute('data-id');
-        document.getElementById('codigousuario').value = element.getAttribute('data-codigo');
         document.getElementById('nombres').value = element.getAttribute('data-nombres');
         document.getElementById('apellidos').value = element.getAttribute('data-apellidos');
         document.getElementById('campoSexo').value = element.getAttribute('data-sexo');
@@ -288,38 +266,19 @@
         document.getElementById('nombreusuario').value = element.getAttribute('data-nombreusuario');
         document.getElementById('password').value = element.getAttribute('data-password');
         document.getElementById('campoDireccion').value = element.getAttribute('data-direccion');
-
-        let estado = element.getAttribute('data-estado');
-        document.getElementById('campoEstado').value = (estado === 'true' || estado === true) ? "true" : "false";
-
+        document.getElementById('campoEstado').value = element.getAttribute('data-estado');
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    document.getElementById('usuarioForm').addEventListener('submit', function() {
-        HabilitarCampos();
-    });
-
     function FormatearTelefono(input) {
-        let valor = input.value.replace(/\D/g, '');
-        if (valor.length > 4) {
-            valor = valor.slice(0, 4) + '-' + valor.slice(4, 8);
-        }
-        input.value = valor;
+        let v = input.value.replace(/\D/g, '');
+        if (v.length > 4) v = v.slice(0, 4) + '-' + v.slice(4, 8);
+        input.value = v;
     }
 
     function FormatearCedula(input) {
-        let v = input.value.toUpperCase();
+        let v = input.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
         let numpart = v.replace(/[^0-9]/g, '');
-        let lastchar = '';
-        let rawclean = v.replace(/[^0-9A-Z]/g, '');
-
-        if (rawclean.length >= 14) {
-            let possibleLetter = rawclean.charAt(rawclean.length - 1);
-            if (/[A-Z]/.test(possibleLetter)) {
-                lastchar = possibleLetter;
-            }
-        }
-
         let resultado = '';
         if (numpart.length > 0) {
             resultado += numpart.slice(0, 3);
@@ -330,37 +289,22 @@
                 }
             }
         }
-        if (numpart.length >= 13 && lastchar !== '') {
-            resultado = `${numpart.slice(0, 3)}-${numpart.slice(3, 9)}-${numpart.slice(9, 13)}${lastchar}`;
+        if (numpart.length >= 13 && v.length > 13) {
+            resultado += v.charAt(13);
         }
         input.value = resultado;
     }
 
     function FormatearNombreCompleto(input) {
-        let excep = ["de", "del", "la", "las", "los", "y"];
         let palabras = input.value.trim().toLowerCase().split(/\s+/);
-        let formateadas = palabras.map((p, idx) => {
-            if (excep.includes(p) && idx > 0) {
-                return p;
-            }
-            return p.charAt(0).toUpperCase() + p.slice(1);
-        });
-        input.value = formateadas.join(' ');
+        input.value = palabras.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
         GenerarNombreUsuario();
     }
 
     function GenerarNombreUsuario() {
-        let nombresArr = document.getElementById('nombres').value.trim().split(/\s+/);
-        let apellidosArr = document.getElementById('apellidos').value.trim().split(/\s+/);
-
-        let primerNombre = nombresArr[0] || '';
-        let primerApellido = apellidosArr[0] || '';
-
-        if (primerNombre && primerApellido) {
-            document.getElementById('nombreusuario').value = primerNombre + " " + primerApellido;
-        } else {
-            document.getElementById('nombreusuario').value = "";
-        }
+        let n = document.getElementById('nombres').value.trim().split(/\s+/)[0] || '';
+        let a = document.getElementById('apellidos').value.trim().split(/\s+/)[0] || '';
+        document.getElementById('nombreusuario').value = (n && a) ? (n + ' ' + a) : '';
     }
 
     function TogglePassword() {
@@ -369,9 +313,8 @@
     }
 
     function BotonModificar() {
-        let idusuario = document.getElementById('idusuario').value;
-        if (!idusuario) {
-            alert("Por favor, selecciona primero un usuario de la tabla haciendo clic sobre él.");
+        if (!document.getElementById('idusuario').value) {
+            alert("Selecciona un usuario de la tabla haciendo clic en él.");
         } else {
             HabilitarCampos();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -380,18 +323,9 @@
 
     function FiltrarTablaUsuarios() {
         let filtro = document.getElementById('inputFiltroBusqueda').value.toLowerCase();
-        let filas = document.querySelectorAll('#tablaUsuarios tbody tr.fila-tabla');
-
-        filas.forEach(fila => {
-            let codigo = fila.children[0].innerText.toLowerCase();
-            let nombre = fila.children[1].innerText.toLowerCase();
-            let cedula = fila.children[4].innerText.toLowerCase();
-
-            if (codigo.includes(filtro) || nombre.includes(filtro) || cedula.includes(filtro)) {
-                fila.style.display = "";
-            } else {
-                fila.style.display = "none";
-            }
+        document.querySelectorAll('#tablaUsuarios tbody tr.fila-tabla').forEach(fila => {
+            let texto = fila.innerText.toLowerCase();
+            fila.style.display = texto.includes(filtro) ? "" : "none";
         });
     }
 </script>

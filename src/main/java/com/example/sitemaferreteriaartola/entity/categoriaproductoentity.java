@@ -1,35 +1,31 @@
 package com.example.sitemaferreteriaartola.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "CategoriaProducto")
+@Table(name = "categoriaproducto")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class categoriaproductoentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdCategoriaProducto")
+    @Column(name = "idcategoriaproducto")
     private Integer idcategoriaproducto;
 
-    @Column(name = "CodigoCategoriaProducto", length = 11, nullable = false, unique = true)
-    private String codigocategoriaproducto;
-
-    @NotNull(message = "El nombre es obligatorio")
-    @Column(name = "Nombre", length = 50, nullable = false)
+    @NotBlank(message = "El nombre es obligatorio")
+    @Column(name = "nombre", length = 50, nullable = false)
     private String nombre;
 
-    @Column(name = "Descripcion", length = 100, nullable = true)
+    @Column(name = "descripcion", length = 100, nullable = true)
     private String descripcion;
 
-    @Column(name = "FechaRegistro", insertable = false, updatable = false)
+    @Column(name = "fecharegistro", insertable = false, updatable = false)
     private LocalDateTime fecharegistro;
 }

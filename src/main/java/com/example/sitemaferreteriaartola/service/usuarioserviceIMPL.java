@@ -23,20 +23,10 @@ public class usuarioserviceIMPL implements usuarioservice {
         try {
             if (usuario.getIdusuario() == null) {
                 boolean cedulaExiste = usuariorepository.findAll().stream()
-                        .anyMatch(u -> u.getCedula().equalsIgnoreCase(usuario.getCedula()));
+                        .anyMatch(u -> u.getCedula() != null && u.getCedula().equalsIgnoreCase(usuario.getCedula()));
                 if (cedulaExiste) {
                     throw new RuntimeException("Ya existe un usuario registrado con esta cédula.");
                 }
-
-                usuarioentity ultimousuario = usuariorepository.findTopByOrderByIdusuarioDesc();
-                String nuevocodigo = "USU-001";
-
-                if (ultimousuario != null && ultimousuario.getCodigousuario() != null) {
-                    String codigoActual = ultimousuario.getCodigousuario();
-                    int numero = Integer.parseInt(codigoActual.replace("USU-", "")) + 1;
-                    nuevocodigo = String.format("USU-%03d", numero);
-                }
-                usuario.setCodigousuario(nuevocodigo);
             }
             usuariorepository.save(usuario);
         } catch (Exception e) {

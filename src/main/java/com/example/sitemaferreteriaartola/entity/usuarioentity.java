@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "Usuario")
+@Table(name = "usuario", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,59 +19,56 @@ public class usuarioentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdUsuario")
+    @Column(name = "idusuario")
     private Integer idusuario;
-
-    @Column(name = "CodigoUsuario", unique = true, length = 10, nullable = false)
-    private String codigousuario;
 
     @NotNull(message = "El rol es obligatorio")
     @ManyToOne
-    @JoinColumn(name = "oRol", nullable = false)
+    @JoinColumn(name = "orol", nullable = false)
     private rolentity orol;
 
     @NotBlank(message = "Los nombres son obligatorios")
-    @Column(name = "Nombres", length = 50, nullable = false)
+    @Column(name = "nombres", length = 50, nullable = false)
     private String nombres;
 
     @NotBlank(message = "Los apellidos son obligatorios")
-    @Column(name = "Apellidos", length = 50, nullable = false)
+    @Column(name = "apellidos", length = 50, nullable = false)
     private String apellidos;
 
     @NotBlank(message = "El sexo es obligatorio")
-    @Column(name = "Sexo", length = 10, nullable = false)
+    @Column(name = "sexo", length = 10, nullable = false)
     private String sexo;
 
     @NotNull(message = "La fecha de nacimiento es obligatoria")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Temporal(TemporalType.DATE)
-    @Column(name = "FechaNacimiento", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "fechanacimiento", nullable = false)
     private Date fechanacimiento;
 
     @NotBlank(message = "El teléfono es obligatorio")
-    @Column(name = "Telefono", length = 9, nullable = false)
+    @Column(name = "telefono", length = 9, nullable = false)
     private String telefono;
 
     @NotBlank(message = "La cédula es obligatoria")
-    @Column(name = "Cedula", length = 16, nullable = false, unique = true)
+    @Column(name = "cedula", length = 16, nullable = false, unique = true)
     private String cedula;
 
     @NotBlank(message = "La dirección es obligatoria")
-    @Column(name = "Direccion", length = 100, nullable = false)
+    @Column(name = "direccion", length = 100, nullable = false)
     private String direccion;
 
     @NotBlank(message = "El nombre de usuario es obligatorio")
-    @Column(name = "NombreUsuario", length = 30, nullable = false, unique = true)
+    @Column(name = "nombreusuario", length = 30, nullable = false, unique = true)
     private String nombreusuario;
 
     @NotBlank(message = "La contraseña es obligatoria")
-    @Column(name = "ContraseñaUsuario", length = 10, nullable = false)
+    @Column(name = "contrasenausuario", length = 10, nullable = false)
     private String contraseñausuario;
 
     @NotNull(message = "El estado es obligatorio")
-    @Column(name = "Estado", nullable = false)
+    @Column(name = "estado", nullable = false)
     private Boolean estado;
 
-    @Column(name = "FechaRegistro", insertable = false, updatable = false)
+    @Column(name = "fecharegistro", insertable = false, updatable = false)
     private LocalDateTime fecharegistro;
 }

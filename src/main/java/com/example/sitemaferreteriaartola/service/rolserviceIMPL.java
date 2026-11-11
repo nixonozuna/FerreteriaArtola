@@ -4,9 +4,7 @@ import com.example.sitemaferreteriaartola.entity.rolentity;
 import com.example.sitemaferreteriaartola.repository.rolrepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class rolserviceIMPL implements rolservice {

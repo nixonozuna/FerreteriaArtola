@@ -1,7 +1,6 @@
 package com.example.sitemaferreteriaartola.controller;
 
 import com.example.sitemaferreteriaartola.entity.usuarioentity;
-import com.example.sitemaferreteriaartola.repository.usuariorepository;
 import com.example.sitemaferreteriaartola.service.usuarioservice;
 import com.example.sitemaferreteriaartola.service.rolservice;
 import jakarta.validation.Valid;
@@ -21,24 +20,11 @@ public class usuariocontroller {
     @Autowired
     private rolservice rolService;
 
-    @Autowired
-    private usuariorepository usuariorepository;
-
     @GetMapping
     public String listarUsuarios(Model model) {
         model.addAttribute("usuarios", usuarioService.listarUsuarios());
         model.addAttribute("roles", rolService.listarRoles());
         model.addAttribute("usuario", new usuarioentity());
-
-        usuarioentity ultimousuario = usuariorepository.findTopByOrderByIdusuarioDesc();
-        String siguientecodigo = "USU-001";
-        if (ultimousuario != null && ultimousuario.getCodigousuario() != null) {
-            String codigoActual = ultimousuario.getCodigousuario();
-            int numero = Integer.parseInt(codigoActual.replace("USU-", "")) + 1;
-            siguientecodigo = String.format("USU-%03d", numero);
-        }
-        model.addAttribute("siguientecodigo", siguientecodigo);
-
         return "usuarios";
     }
 
@@ -47,15 +33,6 @@ public class usuariocontroller {
         if (bindingResult.hasErrors()) {
             model.addAttribute("usuarios", usuarioService.listarUsuarios());
             model.addAttribute("roles", rolService.listarRoles());
-
-            usuarioentity ultimousuario = usuariorepository.findTopByOrderByIdusuarioDesc();
-            String siguientecodigo = "USU-001";
-            if (ultimousuario != null && ultimousuario.getCodigousuario() != null) {
-                String codigoActual = ultimousuario.getCodigousuario();
-                int numero = Integer.parseInt(codigoActual.replace("USU-", "")) + 1;
-                siguientecodigo = String.format("USU-%03d", numero);
-            }
-            model.addAttribute("siguientecodigo", siguientecodigo);
             return "usuarios";
         }
 
@@ -65,15 +42,6 @@ public class usuariocontroller {
             model.addAttribute("error", e.getMessage());
             model.addAttribute("usuarios", usuarioService.listarUsuarios());
             model.addAttribute("roles", rolService.listarRoles());
-
-            usuarioentity ultimousuario = usuariorepository.findTopByOrderByIdusuarioDesc();
-            String siguientecodigo = "USU-001";
-            if (ultimousuario != null && ultimousuario.getCodigousuario() != null) {
-                String codigoActual = ultimousuario.getCodigousuario();
-                int numero = Integer.parseInt(codigoActual.replace("USU-", "")) + 1;
-                siguientecodigo = String.format("USU-%03d", numero);
-            }
-            model.addAttribute("siguientecodigo", siguientecodigo);
             return "usuarios";
         }
 

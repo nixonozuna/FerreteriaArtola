@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Producto")
+@Table(name = "producto")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,40 +17,37 @@ public class productoentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdProducto")
+    @Column(name = "idproducto")
     private Integer idproducto;
 
-    @Column(name = "CodigoProducto", length = 10, nullable = false, unique = true)
-    private String codigoproducto;
-
     @NotBlank(message = "El código de barra es obligatorio")
-    @Column(name = "CodigoBarra", length = 10, nullable = false, unique = true)
+    @Column(name = "codigobarra", length = 10, nullable = false, unique = true)
     private String codigobarra;
 
     @NotNull(message = "La categoría es obligatoria")
     @ManyToOne
-    @JoinColumn(name = "oCategoriaProducto", nullable = false)
+    @JoinColumn(name = "ocategoriaproducto", nullable = false)
     private categoriaproductoentity ocategoriaproducto;
 
-    @NotNull(message = "La unidad de medida es obligatoria")
     @ManyToOne
-    @JoinColumn(name = "oUnidadMedida", nullable = false)
+    @JoinColumn(name = "ounidadmedida", nullable = true)
     private unidadmedidaentity ounidadmedida;
 
     @NotBlank(message = "El nombre es obligatorio")
-    @Column(name = "Nombre", length = 50, nullable = false)
+    @Column(name = "nombre", length = 50, nullable = false)
     private String nombre;
 
-    @Column(name = "Descripcion", length = 100, nullable = true)
+    @Column(name = "descripcion", length = 100, nullable = true)
     private String descripcion;
 
-    @NotNull(message = "El stock inicial es obligatorio")
-    @Column(name = "Stock", nullable = false)
+    @NotNull(message = "El stock es obligatorio")
+    @Column(name = "stock", nullable = false)
     private Integer stock;
 
-    @Column(name = "Estado", nullable = false)
-    private Boolean estado = true;
+    @NotNull(message = "El estado es obligatorio")
+    @Column(name = "estado", nullable = false)
+    private Boolean estado;
 
-    @Column(name = "FechaRegistro", insertable = false, updatable = false)
+    @Column(name = "fecharegistro", insertable = false, updatable = false)
     private LocalDateTime fecharegistro;
 }

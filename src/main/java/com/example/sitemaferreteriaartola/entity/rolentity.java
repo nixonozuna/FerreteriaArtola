@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "Rol")
+@Table(name = "rol", schema = "public")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,15 +15,12 @@ public class rolentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "IdRol")
+    @Column(name = "idrol")
     private Integer idrol;
 
-    @Column(name = "CodigoRol", length = 10, nullable = false, unique = true)
-    private String codigorol;
-
-    @Column(name = "Descripcion", length = 50, nullable = false)
+    @Column(name = "descripcion", length = 50, nullable = false)
     private String descripcion;
 
-    @Column(name = "FechaRegistro", insertable = false, updatable = false)
+    @Column(name = "fecharegistro", insertable = false, updatable = false)
     private LocalDateTime fecharegistro;
 }

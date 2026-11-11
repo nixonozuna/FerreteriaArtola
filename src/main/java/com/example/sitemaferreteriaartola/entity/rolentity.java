@@ -1,4 +1,4 @@
-package com.example.SistemaFerreteriaArtola.entity;
+package com.example.sitemaferreteriaartola.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;

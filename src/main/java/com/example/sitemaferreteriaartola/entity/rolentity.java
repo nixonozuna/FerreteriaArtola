@@ -1,26 +1,22 @@
 package com.example.sitemaferreteriaartola.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "rol", schema = "public")
+@Table(name = "rol")
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class rolentity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idrol")
-    private Integer idrol;
+    private Long idRol;
 
-    @Column(name = "descripcion", length = 50, nullable = false)
+    @Column(name = "descripcion")
     private String descripcion;
 
-    @Column(name = "fecharegistro", insertable = false, updatable = false)
-    private LocalDateTime fecharegistro;
+    @Column(name = "fecharegistro")
+    private LocalDateTime fechaRegistro;
 }

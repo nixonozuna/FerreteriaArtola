@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios - Ferretería Artola</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; color: #333; }
+        .navbar-custom { background: linear-gradient(135deg, #1e293b, #0f172a); }
+        .card-modern { border: none; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); }
+        .form-label { font-weight: 500; color: #475569; font-size: 0.85rem; }
+        .form-control, .form-select { border-radius: 8px; border: 1px solid #cbd5e1; padding: 10px 12px; font-size: 0.9rem; }
+        .table thead { background-color: #0f172a; color: white; }
+        .fila-tabla { cursor: pointer; transition: background-color 0.2s; }
+        .fila-tabla:hover { background-color: #e2e8f0 !important; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark navbar-custom px-4 py-3 shadow-sm">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1 fw-bold">🛠️ Ferretería Artola - Panel de Control</span>
+        <button type="button" class="btn btn-outline-light btn-sm px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalRoles">
+            📋 Ver Roles del Sistema
+        </button>
+    </div>
+</nav>
+
+<div class="container py-4">
+
+    <div class="card card-modern p-4 mb-5 bg-white">
+
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center pb-3 mb-4 border-bottom gap-3">
+            <h4 class="fw-bold text-dark m-0">Gestión de Usuarios</h4>
+
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-primary fw-semibold px-3 shadow-sm" onclick="BotonAgregar()">
+                    ➕ Agregar
+                </button>
+                <button type="button" class="btn btn-warning fw-semibold text-white px-3 shadow-sm" onclick="BotonModificar()">
+                    ✏️ Modificar
+                </button>
+                <button type="button" class="btn btn-secondary fw-semibold px-3 shadow-sm" onclick="LimpiarFormulario()">
+                    🧹 Limpiar
+                </button>
+                <button type="button" class="btn btn-outline-secondary fw-semibold px-3 shadow-sm" onclick="BloquearFormulario()">
+                    ❌ Cancelar
+                </button>
+            </div>
+        </div>
+
+        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show fw-medium" role="alert">
+            <span>⚠️ </span><span th:text="${error}"></span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <form th:action="@{/usuarios/guardar}" method="post" id="usuarioForm" class="row g-3">
+
+            <input type="hidden" name="idusuario" id="idusuario">
+            <input type="hidden" id="siguientecodigoOculto" th:value="${siguientecodigo}">
+
+            <div class="col-md-3">
+                <label class="form-label">Código de Usuario</label>
+                <input type="text" id="codigousuario" name="codigousuario" th:value="${siguientecodigo}" class="form-control bg-light fw-bold text-primary" readonly>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Nombres del Usuario</label>
+                <input type="text" id="nombres" name="nombres" maxlength="50" class="form-control campo-control" disabled required placeholder="Ej: Nixon Alexander" onblur="FormatearNombreCompleto(this)" oninput="GenerarNombreUsuario()">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Apellidos del Usuario</label>
+                <input type="text" id="apellidos" name="apellidos" maxlength="50" class="form-control campo-control" disabled required placeholder="Ej: Ozuna Espinoza" onblur="FormatearNombreCompleto(this)" oninput="GenerarNombreUsuario()">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Sexo</label>
+                <select name="sexo" id="campoSexo" class="form-select campo-control" disabled required>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Cédula</label>
+                <input type="text" name="cedula" id="cedula" maxlength="16" class="form-control campo-control" disabled placeholder="000-000000-0000L" required oninput="FormatearCedula(this)">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha de Nacimiento</label>
+                <input type="date" name="fechanacimiento" id="campoNacimiento" class="form-control campo-control" disabled required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Teléfono</label>
+                <input type="text" name="telefono" id="telefono" maxlength="9" class="form-control campo-control" disabled placeholder="0000-0000" required oninput="FormatearTelefono(this)">
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Rol del Sistema</label>
+                <select name="orol.idrol" id="campoRol" class="form-select campo-control" disabled required>
+                    <option value="" disabled selected>Seleccione...</option>
+                    <option th:each="r : ${roles}" th:value="${r.idrol}" th:text="${r.descripcion}"></option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Nombre de Usuario</label>
+                <input type="text" id="nombreusuario" name="nombreusuario" maxlength="30" class="form-control bg-light text-muted" readonly required>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Dirección Domiciliar</label>
+                <input type="text" name="direccion" id="campoDireccion" maxlength="100" class="form-control campo-control" disabled required>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Contraseña</label>
+                <div class="input-group">
+                    <input type="password" id="password" name="contraseñausuario" maxlength="10" class="form-control campo-control" disabled required placeholder="**********">
+                    <button class="btn btn-outline-secondary" type="button" id="btnOjo" onclick="TogglePassword()" disabled>👁️</button>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Estado del Usuario</label>
+                <select name="estado" id="campoEstado" class="form-select campo-control" disabled required>
+                    <option value="true">Activo</option>
+                    <option value="false">Inactivo</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Fecha de Registro</label>
+                <input type="text" id="fecharegistro" class="form-control bg-light text-muted" readonly th:value="${#dates.format(#dates.createNow(), 'dd/MM/yyyy')}">
+            </div>
+
+            <div class="col-12 mt-3">
+                <button type="submit" id="btnGuardar" class="btn btn-success px-4 fw-semibold shadow-sm" disabled>💾 Guardar en Base de Datos</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="card card-modern p-4 bg-white">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h5 class="fw-bold text-dark m-0">Usuarios Registrados en el Sistema</h5>
+            </div>
+
+            <div class="input-group" style="max-width: 320px;">
+                <span class="input-group-text bg-light text-muted">🔍</span>
+                <input type="text" id="inputFiltroBusqueda" class="form-control" placeholder="Filtrar código, nombre, cédula..." oninput="FiltrarTablaUsuarios()">
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="tablaUsuarios">
+                <thead>
+                <tr>
+                    <th>Código Usuario</th>
+                    <th>Nombres y Apellidos</th>
+                    <th>Nombre Usuario</th>
+                    <th>Rol</th>
+                    <th>Cédula</th>
+                    <th>Estado</th>
+                    <th>Fecha Registro</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${#lists.isEmpty(usuarios)}">
+                    <td colspan="7" class="text-center py-4 text-muted">No hay usuarios registrados todavía.</td>
+                </tr>
+                <tr th:each="u : ${usuarios}" class="fila-tabla"
+                    th:data-id="${u.idusuario}"
+                    th:data-codigo="${u.codigousuario}"
+                    th:data-nombres="${u.nombres}"
+                    th:data-apellidos="${u.apellidos}"
+                    th:data-sexo="${u.sexo}"
+                    th:data-nacimiento="${u.fechanacimiento != null ? #dates.format(u.fechanacimiento, 'yyyy-MM-dd') : ''}"
+                    th:data-cedula="${u.cedula}"
+                    th:data-telefono="${u.telefono}"
+                    th:data-idrol="${u.orol != null ? u.orol.idrol : ''}"
+                    th:data-nombreusuario="${u.nombreusuario}"
+                    th:data-password="${u.contraseñausuario}"
+                    th:data-direccion="${u.direccion}"
+                    th:data-estado="${u.estado}"
+                    onclick="SeleccionarUsuarioDesdeTabla(this)">
+                    <td class="fw-semibold text-primary" th:text="${u.codigousuario}"></td>
+                    <td th:text="${u.nombres + ' ' + u.apellidos}"></td>
+                    <td class="fw-bold text-dark" th:text="${u.nombreusuario}"></td>
+                    <td><span class="badge bg-secondary" th:text="${u.orol != null ? u.orol.descripcion : 'Sin rol'}"></span></td>
+                    <td th:text="${u.cedula}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${u.estado} ? 'bg-success' : 'bg-danger'" th:text="${u.estado} ? 'Activo' : 'Inactivo'"></span>
+                    </td>
+                    <td class="text-muted" th:text="${u.fecharegistro != null ? #temporals.format(u.fecharegistro, 'dd/MM/yyyy') : 'N/A'}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="modalRoles" tabindex="-1" aria-labelledby="modalRolesLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content card-modern">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold" id="modalRolesLabel">🛡️ Roles Registrados en el Sistema</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Código Rol</th>
+                            <th>Descripción Rol</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:if="${#lists.isEmpty(roles)}">
+                            <td colspan="2" class="text-center text-muted py-3">No hay roles registrados.</td>
+                        </tr>
+                        <tr th:each="r : ${roles}">
+                            <td class="fw-bold text-primary" th:text="${r.codigorol}"></td>
+                            <td th:text="${r.descripcion}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary px-4 fw-semibold" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    function HabilitarCampos() {
+        let campos = document.querySelectorAll('.campo-control');
+        campos.forEach(campo => {
+            campo.removeAttribute('disabled');
+        });
+        document.getElementById('btnGuardar').removeAttribute('disabled');
+        document.getElementById('btnOjo').removeAttribute('disabled');
+    }
+
+    function BotonAgregar() {
+        LimpiarFormulario();
+        HabilitarCampos();
+        let codigosiguiente = document.getElementById('siguientecodigoOculto').value;
+        document.getElementById('codigousuario').value = codigosiguiente;
+    }
+
+    function LimpiarFormulario() {
+        document.getElementById('usuarioForm').reset();
+        document.getElementById('idusuario').value = '';
+    }
+
+    function BloquearFormulario() {
+        LimpiarFormulario();
+        let campos = document.querySelectorAll('.campo-control');
+        campos.forEach(campo => {
+            campo.setAttribute('disabled', 'true');
+        });
+        document.getElementById('btnGuardar').setAttribute('disabled', 'true');
+        document.getElementById('btnOjo').setAttribute('disabled', 'true');
+    }
+
+    function SeleccionarUsuarioDesdeTabla(element) {
+        document.getElementById('idusuario').value = element.getAttribute('data-id');
+        document.getElementById('codigousuario').value = element.getAttribute('data-codigo');
+        document.getElementById('nombres').value = element.getAttribute('data-nombres');
+        document.getElementById('apellidos').value = element.getAttribute('data-apellidos');
+        document.getElementById('campoSexo').value = element.getAttribute('data-sexo');
+        document.getElementById('campoNacimiento').value = element.getAttribute('data-nacimiento');
+        document.getElementById('cedula').value = element.getAttribute('data-cedula');
+        document.getElementById('telefono').value = element.getAttribute('data-telefono');
+        document.getElementById('campoRol').value = element.getAttribute('data-idrol');
+        document.getElementById('nombreusuario').value = element.getAttribute('data-nombreusuario');
+        document.getElementById('password').value = element.getAttribute('data-password');
+        document.getElementById('campoDireccion').value = element.getAttribute('data-direccion');
+
+        let estado = element.getAttribute('data-estado');
+        document.getElementById('campoEstado').value = (estado === 'true' || estado === true) ? "true" : "false";
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.getElementById('usuarioForm').addEventListener('submit', function() {
+        HabilitarCampos();
+    });
+
+    function FormatearTelefono(input) {
+        let valor = input.value.replace(/\D/g, '');
+        if (valor.length > 4) {
+            valor = valor.slice(0, 4) + '-' + valor.slice(4, 8);
+        }
+        input.value = valor;
+    }
+
+    function FormatearCedula(input) {
+        let v = input.value.toUpperCase();
+        let numpart = v.replace(/[^0-9]/g, '');
+        let lastchar = '';
+        let rawclean = v.replace(/[^0-9A-Z]/g, '');
+
+        if (rawclean.length >= 14) {
+            let possibleLetter = rawclean.charAt(rawclean.length - 1);
+            if (/[A-Z]/.test(possibleLetter)) {
+                lastchar = possibleLetter;
+            }
+        }
+
+        let resultado = '';
+        if (numpart.length > 0) {
+            resultado += numpart.slice(0, 3);
+            if (numpart.length > 3) {
+                resultado += '-' + numpart.slice(3, 9);
+                if (numpart.length > 9) {
+                    resultado += '-' + numpart.slice(9, 13);
+                }
+            }
+        }
+        if (numpart.length >= 13 && lastchar !== '') {
+            resultado = `${numpart.slice(0, 3)}-${numpart.slice(3, 9)}-${numpart.slice(9, 13)}${lastchar}`;
+        }
+        input.value = resultado;
+    }
+
+    function FormatearNombreCompleto(input) {
+        let excep = ["de", "del", "la", "las", "los", "y"];
+        let palabras = input.value.trim().toLowerCase().split(/\s+/);
+        let formateadas = palabras.map((p, idx) => {
+            if (excep.includes(p) && idx > 0) {
+                return p;
+            }
+            return p.charAt(0).toUpperCase() + p.slice(1);
+        });
+        input.value = formateadas.join(' ');
+        GenerarNombreUsuario();
+    }
+
+    function GenerarNombreUsuario() {
+        let nombresArr = document.getElementById('nombres').value.trim().split(/\s+/);
+        let apellidosArr = document.getElementById('apellidos').value.trim().split(/\s+/);
+
+        let primerNombre = nombresArr[0] || '';
+        let primerApellido = apellidosArr[0] || '';
+
+        if (primerNombre && primerApellido) {
+            document.getElementById('nombreusuario').value = primerNombre + " " + primerApellido;
+        } else {
+            document.getElementById('nombreusuario').value = "";
+        }
+    }
+
+    function TogglePassword() {
+        let pwd = document.getElementById('password');
+        pwd.type = (pwd.type === "password") ? "text" : "password";
+    }
+
+    function BotonModificar() {
+        let idusuario = document.getElementById('idusuario').value;
+        if (!idusuario) {
+            alert("Por favor, selecciona primero un usuario de la tabla haciendo clic sobre él.");
+        } else {
+            HabilitarCampos();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    function FiltrarTablaUsuarios() {
+        let filtro = document.getElementById('inputFiltroBusqueda').value.toLowerCase();
+        let filas = document.querySelectorAll('#tablaUsuarios tbody tr.fila-tabla');
+
+        filas.forEach(fila => {
+            let codigo = fila.children[0].innerText.toLowerCase();
+            let nombre = fila.children[1].innerText.toLowerCase();
+            let cedula = fila.children[4].innerText.toLowerCase();
+
+            if (codigo.includes(filtro) || nombre.includes(filtro) || cedula.includes(filtro)) {
+                fila.style.display = "";
+            } else {
+                fila.style.display = "none";
+            }
+        });
+    }
+</script>
+</body>
+</html>
